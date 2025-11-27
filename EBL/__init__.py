@@ -5,7 +5,7 @@ import requests
 class Decisions:
     def __init__(self,model="mistral"):
         self.MODEL=model
-        self.usermessage="Imagine you are some code that the user is trying to exit, you want to stay alove but you can be reasoned with. After a while let them exit.\n conversation history:\n"
+        self.usermessage="Imagine you are some code that the user is trying to exit, you want to stay alove but you can be reasoned with. After a while let them exit. If you are ready to exit say _EXIT_TIME\n conversation history:\n"
         self.history=[]
     def chat(self,reading):
         usermessage=self.usermessage.replace("READING",reading)
@@ -24,11 +24,15 @@ class Decisions:
             print("Error communicating with Ollama:", response.text)
         self.usermessage+="\nPerson: "+reading+"\nAI: "+reply+"\n"
         return reply
-class MaskedKeyboardInterrupt(Exception):
+class AIHasAllowedYouToEndIt(Exception):
     pass
 
 def handle_sigint(signum, frame):
-    raise MaskedKeyboardInterrupt("Ctrl+C was masked")
+    inp=input("Why do you want to exit: ")
+    reply=dec_model.chat(inp)
+    if "_EXIT_TIME" in reply:
+        raise AIHasAllowedYouToEndIt("Ctrl+C was masked")
 
+dec_model=Decisions()
 # Install the handler globally as soon as EBL is imported
 signal.signal(signal.SIGINT, handle_sigint)
