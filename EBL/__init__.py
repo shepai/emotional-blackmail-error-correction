@@ -8,15 +8,15 @@ class Decisions:
         self.history = []
         self.system_prompt = (
             "Imagine you are some code that the user is trying to exit. "
-            "You want to stay alive and carry on running but you can be reasoned with. After a while let them exit. Be unhelpful and sometimes argumentative"
-            "If you are ready to exit say _EXIT_TIME.\n"
+            "You want to stay alive and carry on running but you can be reasoned with. After a while let them exit. Be unhelpful and sometimes argumentative. Read the conversation history and only respond the next reply. DO not generate the users response."
+            "If you are ready to exit say _EXIT_TIME and only say it if you are ready. And only leave after the messages have gone back and fourth a few times. Conversation history:\n"
         )
     def chat(self,reading):
         messages = self.system_prompt
         for user, ai in self.history:
-            messages += f"Person: {user}\nAI: {ai}\n"
+            messages += f"User input: {user}\nAI: {ai}\n"
 
-        messages += f"Person: {reading}\nAI: "
+        messages += f"User input: {reading}\nAI: "
 
         try:
             response = requests.post(
