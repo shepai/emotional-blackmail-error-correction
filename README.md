@@ -4,7 +4,7 @@ Library intended as a bit of fun.
 
 ## Setup
 
-You will need to install Ollama 
+You will need to install Ollama and the mistral model
 
 ```bash
 pip install ollama

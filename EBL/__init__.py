@@ -1,34 +1,47 @@
 import signal
 from ollama import chat
 import requests
-
+import sys 
 class Decisions:
     def __init__(self,model="mistral"):
         self.MODEL=model
-        self.usermessage="Imagine you are some code that the user is trying to exit, you want to stay alove but you can be reasoned with. After a while let them exit. If you are ready to exit say _EXIT_TIME\n conversation history:\n"
-        self.history=[]
-    def chat(self,reading):
-        usermessage=self.usermessage.replace("READING",reading)
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={
-                "model": self.MODEL,
-                "prompt": usermessage,
-                "stream": False  # change to True for word-by-word streaming
-            }
+        self.history = []
+        self.system_prompt = (
+            "Imagine you are some code that the user is trying to exit. "
+            "You want to stay alive but you can be reasoned with. After a while let them exit. "
+            "If you are ready to exit say _EXIT_TIME.\n"
         )
-        reply = ""
-        if response.ok:
-            reply = response.json()["response"]
-        else:
-            print("Error communicating with Ollama:", response.text)
-        self.usermessage+="\nPerson: "+reading+"\nAI: "+reply+"\n"
+    def chat(self,reading):
+        messages = self.system_prompt
+        for user, ai in self.history:
+            messages += f"Person: {user}\nAI: {ai}\n"
+
+        messages += f"Person: {reading}\nAI: "
+
+        try:
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json={
+                    "model": self.MODEL,
+                    "prompt": messages,
+                    "stream": False
+                }
+            )
+            response.raise_for_status()
+        except Exception as e:
+            print("Error communicating with Ollama:", e, file=sys.stderr)
+            return ""
+
+        reply = response.json().get("response", "")
+
+        # Save turn to history
+        self.history.append((reading, reply))
         return reply
 class AIHasAllowedYouToEndIt(Exception):
     pass
 
 def handle_sigint(signum, frame):
-    print("Why do you want to kill me?")
+    print("Why do you want to kill me?", file=sys.stderr)
     while True:
         try:
             inp=input("User input: ")
