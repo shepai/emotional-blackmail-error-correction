@@ -7,6 +7,7 @@ Library intended as a bit of fun.
 You will need to install Ollama 
 
 ```bash
+pip install ollama
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull mistral
 ```

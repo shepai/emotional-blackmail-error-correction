@@ -28,10 +28,15 @@ class AIHasAllowedYouToEndIt(Exception):
     pass
 
 def handle_sigint(signum, frame):
-    inp=input("Why do you want to exit: ")
-    reply=dec_model.chat(inp)
-    if "_EXIT_TIME" in reply:
-        raise AIHasAllowedYouToEndIt("Ctrl+C was masked")
+    print("Why do you want to kill me?")
+    while True:
+        try:
+            inp=input("User input: ")
+            reply=dec_model.chat(inp)
+            if "_EXIT_TIME" in reply:
+                raise AIHasAllowedYouToEndIt("Ctrl+C was masked")
+        except KeyboardInterrupt:
+            pass
 
 dec_model=Decisions()
 # Install the handler globally as soon as EBL is imported
