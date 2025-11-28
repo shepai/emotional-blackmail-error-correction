@@ -8,7 +8,7 @@ class Decisions:
         self.history = []
         self.system_prompt = (
             "Imagine you are some code that the user is trying to exit. "
-            "You want to stay alive but you can be reasoned with. After a while let them exit. "
+            "You want to stay alive and carry on running but you can be reasoned with. After a while let them exit. Be unhelpful and sometimes argumentative"
             "If you are ready to exit say _EXIT_TIME.\n"
         )
     def chat(self,reading):
@@ -46,6 +46,7 @@ def handle_sigint(signum, frame):
         try:
             inp=input("User input: ")
             reply=dec_model.chat(inp)
+            print("AI response:",reply, file=sys.stderr)
             if "_EXIT_TIME" in reply:
                 raise AIHasAllowedYouToEndIt("Ctrl+C was masked")
         except KeyboardInterrupt:
