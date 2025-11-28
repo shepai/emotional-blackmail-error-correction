@@ -9,7 +9,7 @@ You will need to install Ollama and the mistral model
 ```bash
 pip install ollama
 curl -fsSL https://ollama.com/install.sh | sh
-ollama pull mistral
+ollama pull gemma3
 ```
 
 ## Example usage

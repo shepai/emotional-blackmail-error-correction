@@ -3,7 +3,7 @@ from ollama import chat
 import requests
 import sys 
 class Decisions:
-    def __init__(self,model="mistral"):
+    def __init__(self,model="gemma3"):
         self.MODEL=model
         self.history = []
         self.system_prompt = (
